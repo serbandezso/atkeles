@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Átkelés a Szakadék Fölött</title>
+    <style>
+        :root {
+            --primary-gold: #ffd700;
+            --secondary-gold: #ffed4e;
+            --mind-red: #ff6b6b;
+            --silence-teal: #4ecdc4;
+            --bg-dark: #0a0a0a;
+            --bg-light: rgba(255,255,255,0.05);
+            --text-light: #f0f0f0;
+            --border-gold: rgba(255,215,0,0.2);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a1a 100%);
+            color: var(--text-light);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        
+        /* Header */
+        header { text-align: center; padding: 4rem 0; }
+        .title {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 300;
+            background: linear-gradient(45deg, var(--primary-gold), var(--secondary-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            font-style: italic;
+        }
+        
+        /* Bridge */
+        .bridge-container {
+            position: relative;
+            height: 200px;
+            margin: 4rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bridge {
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, var(--primary-gold) 20%, var(--secondary-gold) 50%, var(--primary-gold) 80%, transparent 100%);
+            position: relative;
+            border-radius: 2px;
+        }
+        .bridge::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 0;
+            right: 0;
+            height: 24px;
+            background: radial-gradient(circle at center, rgba(255,215,0,0.4) 0%, transparent 70%);
+        }
+        
+        /* Intro text */
+        .intro {
+            text-align: center;
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 2.5rem;
+            background: var(--bg-light);
+            border-radius: 20px;
+            border: 1px solid var(--border-gold);
+            opacity: 0;
+            animation: fadeIn 2s ease-out 0.5s forwards;
+        }
+        .intro p { font-size: 1.15rem; margin-bottom: 1.5rem; }
+        
+        /* Portals */
+        .portals {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin: 5rem 0;
+        }
+        .portal {
+            background: rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255,215,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        .portal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.15), transparent);
+            transition: left 0.8s ease;
+        }
+        .portal:hover::before { left: 100%; }
+        .portal:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-gold);
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 20px 40px rgba(255,215,0,0.2);
+        }
+        .portal-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-gold);
+            font-weight: 300;
+        }
+        .portal-desc { opacity: 0.9; margin-bottom: 1.5rem; font-size: 1.1rem; }
+        .portal-tag {
+            display: inline-block;
+            padding: 0.4rem 1.5rem;
+            background: rgba(255,215,0,0.25);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            color: var(--primary-gold);
+        }
+        
+        /* Mind vs Silence */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 6rem 0;
+        }
+        .column {
+            padding: 2.5rem;
+            background: var(--bg-light);
+            border-radius: 15px;
+            border-left: 4px solid;
+        }
+        .column.mind { border-left-color: var(--mind-red); }
+        .column.silence { border-left-color: var(--silence-teal); }
+        .column-title {
+            font-size: 1.6rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--primary-gold);
+        }
+        .column ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .column li {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+            font-size: 1.1rem;
+        }
+        .column li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            font-size: 1.5rem;
+        }
+        .mind li::before { color: var(--mind-red); }
+        .silence li::before { color: var(--silence-teal); }
+        
+        /* Quote */
+        .quote {
+            text-align: center;
+            font-style: italic;
+            margin: 4rem 0;
+            padding: 3rem 2.5rem;
+            border-left: 5px solid var(--primary-gold);
+            background: rgba(255,215,0,0.08);
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 0 15px 15px 0;
+        }
+        
+        /* Nav */
+        nav {
+            background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-gold);
+        }
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+        }
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 1rem 1.5rem;
+            margin: 0 0.5rem;
+            border-radius: 25px;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+        .nav-links a:hover {
+            background: var(--primary-gold);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .intro, .column { animation: fadeIn 2s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .comparison { grid-template-columns: 1fr; }
+            .title { font-size: 2.5rem; }
+            .container { padding: 0 1.5rem; }
+            .nav-links { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="#fooldal">Főoldal</a></li>
+            <li><a href="#szemelyes-ut">Személyes Út</a></li>
+            <li><a href="#kvantum-szvets">Kvantum-Szövetség</a></li>
+            <li><a href="#elme-csend">Elme vs Csend</a></li>
+            <li><a href="#kapcsolat">Kapcsolat</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <h1 class="title">Átkelés a Szakadék Fölött</h1>
+            <p class="subtitle">A félelemből a bizalom útján. A hiányból az egésszé.[attached_file:1]</p>
+        </header>
+        
+        <div class="bridge-container">
+            <div class="bridge"></div>
+        </div>
+        
+        <section class="intro">
+            <p>A jövőt szakadéknak láttad magad előtt. A kudarc lehetősége olyan szégyent hordozott, amit az önbecsülésed már nem bírt el. Inkább választotta volna a biztos halált, mint hogy szembesüljön a zuhanás félelmével.[attached_file:1]</p>
+            <p>Amikor az elméd összeomlott, a csendben előlépett valami: a szeretet, amely nem vádol, nem szégyenít, csak megtart. Az Isteni gondviselés nem mentett ki a krízisből, de velem hordozta annak terhét.[attached_file:1]</p>
+            <p>Most azt szeretném átadni, amit megtanultam: a szenvedés átalakítható, a hiányból egésszé válhatunk.[attached_file:1]</p>
+        </section>
+        
+        <section class="portals" id="portals">
+            <a href="#szemelyes-ut" class="portal">
+                <h2 class="portal-title">Személyes Utazás</h2>
+                <p class="portal-desc">A kreativitás és önazonosság útja - ahogyan a hiány és a félelem anyaggá válik az átalakulás szolgálatában.</p>
+                <span class="portal-tag">Belső Átalakulás</span>
+            </a>
+            <a href="#kvantum-szvets" class="portal">
+                <h2 class="portal-title">Kvantum-Szövetség</h2>
+                <p class="portal-desc">A gyakorlati alkalmazás - ahogyan a kapott szeretet visszaárad mások életébe értékké formálva.</p>
+                <span class="portal-tag">Külső Szolgálat</span>
+            </a>
+        </section>
+        
+        <section class="comparison" id="elme-csend">
+            <div class="column mind">
+                <h3 class="column-title">Az Elme Védelme</h3>
+                <ul>
+                    <li>"Én irányítok. Én döntök. Én védekezem."</li>
+                    <li>Vádaskodás és harag</li>
+                    <li>Félelem-alapú reakciók</li>
+                    <li>Kontroll illúziója</li>
+                    <li>Érzelmi turbulencia</li>
+                </ul>
+            </div>
+            <div class="column silence">
+                <h3 class="column-title">A Tudatalatti Csend</h3>
+                <ul>
+                    <li>"Legyen meg a Te akaratod."</li>
+                    <li>Szeretet gondoskodó formája</li>
+                    <li>Bizalom-alapú cselekvés</li>
+                    <li>Hála</li>
+                    <li>Mély nyugalom</li>
+                </ul>
+            </div>
+        </section>
+        
+        <blockquote class="quote" id="quote">
+            "Nem a csodát vártam - csak a következő lépés erejét. És mindig jött, láthatatlanul, csendesen."[attached_file:1]
+        </blockquote>
+        
+        <section class="intro" style="text-align: center;">
+            <h2 style="color: var(--primary-gold); margin-bottom: 2rem;">Mit találsz itt?</h2>
+            <p>Nem megmentést adok át. Nem válaszokat és nem módszert. Amit itt találsz, az egy út története – esendő, néha fájdalmas, néha félelmetes.[attached_file:1]</p>
+            <p>A híd előtted van. Nem kell mást tenned, csak felismerned, hogy létezik. Kezdd ahol most vagy.[attached_file:1]</p>
+        </section>
+    </div>
+    
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Particles background
+        function createParticles() {
+            const particles = document.createElement('div');
+            particles.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:0.1;';
+            particles.id = 'particles';
+            document.body.appendChild(particles);
+            
+            for(let i=0; i<50; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position:absolute;width:3px;height:3px;background:white;border-radius:50%;
+                    left:${Math.random()*100}%;top:${Math.random()*100}%;
+                    animation: float ${10+Math.random()*20}s infinite linear;
+                    animation-delay: ${Math.random()*5}s;
+                `;
+                particles.appendChild(particle);
+            }
+        }
+        createParticles();
+    </script>
+</body>
+</html>
